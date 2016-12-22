@@ -91,7 +91,7 @@ if [[ -e /etc/openvpn/server.conf ]]; then
 			# Generates the custom client.ovpn
 			newclient "$CLIENT"
 			echo ""
-			echo "Client $CLIENT added, certs available at ~/$CLIENT.ovpn"
+			echo "Client $CLIENT added, configuration is available at" ~/"$CLIENT.ovpn"
 			exit
 			;;
 			2)
@@ -276,7 +276,7 @@ ifconfig-pool-persist ipp.txt" > /etc/openvpn/server.conf
 		;;
 	esac
 	echo "keepalive 10 120
-cipher AES-128-CBC
+cipher AES-256-CBC
 comp-lzo
 user nobody
 group $GROUPNAME
@@ -369,7 +369,7 @@ nobind
 persist-key
 persist-tun
 remote-cert-tls server
-cipher AES-128-CBC
+cipher AES-256-CBC
 comp-lzo
 setenv opt block-outside-dns
 key-direction 1
@@ -379,6 +379,6 @@ verb 3" > /etc/openvpn/client-common.txt
 	echo ""
 	echo "Finished!"
 	echo ""
-	echo "Your client config is available at ~/$CLIENT.ovpn"
+	echo "Your client configuration is available at" ~/"$CLIENT.ovpn"
 	echo "If you want to add more clients, you simply need to run this script another time!"
 fi
