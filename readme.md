@@ -10,6 +10,6 @@ Run the script and follow the assistant:
 
 Once it ends, you can run it again to add more users, remove some of them or even completely uninstall OpenVPN.
 
-## I want to run my own VPN but I don't have a server
+## Where to find a good server
 
-You can get a great VPS for just $5/month at [Digital Ocean](https://eusebiu.me/digitalocean).
+You can get great servers for just $5/month at [Digital Ocean](https://eusebiu.me/digitalocean).
