@@ -1,7 +1,7 @@
 # OpenVPN Install
 OpenVPN Install is simple script you can use to install and configure OpenVPN on Ubuntu, Debian and CentOS. It has been designed to be as unobtrusive and universal as possible.
 
-The script is a fork of the [openvpn-install](https://github.com/Nyr/openvpn-install) script created and maintained by [Nyr](https://github.com/Nyr). This version uses a different class of IPs.
+The script is a fork of the [openvpn-install](https://github.com/Nyr/openvpn-install) script created and maintained by [Nyr](https://github.com/Nyr). This version uses a different class of IPs and it provides different DNS resolvers than the original.
 
 ## Installation
 Run the script and follow the assistant:
