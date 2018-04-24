@@ -6,7 +6,7 @@ The script is a fork of the [openvpn-install](https://github.com/Nyr/openvpn-ins
 ## Installation
 Run the script and follow the assistant:
 
-`wget http://eusb.me/29twi0P -O openvpn-install.sh && bash openvpn-install.sh`
+`wget http://eusb.me/openvpn -O openvpn-install.sh && bash openvpn-install.sh`
 
 Once it ends, you can run it again to add more users, remove some of them or even completely uninstall OpenVPN.
 
