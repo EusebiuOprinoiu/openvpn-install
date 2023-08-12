@@ -1,4 +1,4 @@
-# OpenVPN road warrior installer for Ubuntu, Debian, Fedora, CentOS, AlmaLinux and Rocky Linux.
+# OpenVPN road warrior installer.
 
 # This script will let you set up your own VPN server in no more than a minute, even if you haven't used OpenVPN before.
 # It has been designed to be as unobtrusive and universal as possible.
@@ -187,7 +187,7 @@ if [[ ! -e /etc/openvpn/server/server.conf ]]; then
 	echo "   3) Google"
 	echo "   4) OpenDNS"
 	echo "   5) AdGuard"
-	read -p "DNS server [1]: " dns
+		read -p "DNS server [1]: " dns
 	until [[ -z "$dns" || "$dns" =~ ^[1-6]$ ]]; do
 		echo "$dns: invalid selection."
 		read -p "DNS server [1]: " dns
@@ -234,7 +234,7 @@ LimitNPROC=infinity" > /etc/systemd/system/openvpn-server@server.service.d/disab
 		systemctl enable --now firewalld.service
 	fi
 	# Get easy-rsa
-	easy_rsa_url='https://github.com/OpenVPN/easy-rsa/releases/download/v3.1.1/EasyRSA-3.1.1.tgz'
+	easy_rsa_url='https://github.com/OpenVPN/easy-rsa/releases/download/v3.1.5/EasyRSA-3.1.5.tgz'
 	mkdir -p /etc/openvpn/server/easy-rsa/
 	{ wget -qO- "$easy_rsa_url" 2>/dev/null || curl -sL "$easy_rsa_url" ; } | tar xz -C /etc/openvpn/server/easy-rsa/ --strip-components 1
 	chown -R root:root /etc/openvpn/server/easy-rsa/
