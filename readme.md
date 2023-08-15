@@ -12,4 +12,4 @@ Once it ends, you can run it again to add more users, remove some of them or eve
 
 ## Where to find a good server
 
-You can get great servers for just $5/month at [Digital Ocean](https://eusebiu.com/digitalocean).
+You can get great servers at [Vultr](https://eusebiu.com/vultr), [Hetzner](https://eusebiu.com/hetzner), or [DigitalOcean](https://eusebiu.com/digitalocean).
