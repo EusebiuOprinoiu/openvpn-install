@@ -42,7 +42,6 @@ bower_components
 **/vendor/*
 !**/vendor/composer
 !**/vendor/autoload.php
-!**/vendor/package-name
 
 # Github Specific Files
 !.gitkeep
