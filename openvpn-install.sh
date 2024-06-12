@@ -13,12 +13,6 @@ fi
 # Discard stdin. Needed when running from an one-liner which includes a newline
 read -N 999999 -t 0.001
 
-# Detect OpenVZ 6
-if [[ $(uname -r | cut -d "." -f 1) -eq 2 ]]; then
-	echo "The system is running an old kernel, which is incompatible with this installer."
-	exit
-fi
-
 # Detect OS
 # $os_version variables aren't always in use, but are kept here for convenience
 if grep -qs "ubuntu" /etc/os-release; then
@@ -43,21 +37,28 @@ Supported distros are Ubuntu, Debian, Fedora, CentOS, AlmaLinux and Rocky Linux.
 	exit
 fi
 
-if [[ "$os" == "ubuntu" && "$os_version" -lt 1804 ]]; then
-	echo "Ubuntu 18.04 or higher is required to use this installer.
+if [[ "$os" == "ubuntu" && "$os_version" -lt 2204 ]]; then
+	echo "Ubuntu 22.04 or higher is required to use this installer.
 This version of Ubuntu is too old and unsupported."
 	exit
 fi
 
-if [[ "$os" == "debian" && "$os_version" -lt 9 ]]; then
-	echo "Debian 9 or higher is required to use this installer.
+if [[ "$os" == "debian" ]]; then
+	if grep -q '/sid' /etc/debian_version; then
+		echo "Debian Testing and Debian Unstable are unsupported by this installer."
+		exit
+	fi
+	if [[ "$os_version" -lt 11 ]]; then
+		echo "Debian 11 or higher is required to use this installer.
 This version of Debian is too old and unsupported."
-	exit
+		exit
+	fi
 fi
 
-if [[ "$os" == "centos" && "$os_version" -lt 7 ]]; then
-	echo "CentOS 7 or higher is required to use this installer.
-This version of CentOS is too old and unsupported."
+if [[ "$os" == "centos" && "$os_version" -lt 9 ]]; then
+	os_name=$(sed 's/ release.*//' /etc/almalinux-release /etc/rocky-release /etc/centos-release 2>/dev/null | head -1)
+	echo "$os_name 9 or higher is required to use this installer.
+This version of $os_name is too old and unsupported."
 	exit
 fi
 
@@ -223,8 +224,8 @@ LimitNPROC=infinity" > /etc/systemd/system/openvpn-server@server.service.d/disab
 		apt-get update
 		apt-get install -y --no-install-recommends openvpn openssl ca-certificates $firewall
 	elif [[ "$os" = "centos" ]]; then
-		yum install -y epel-release
-		yum install -y openvpn openssl ca-certificates tar $firewall
+		dnf install -y epel-release
+		dnf install -y openvpn openssl ca-certificates tar $firewall
 	else
 		# Else, OS must be Fedora
 		dnf install -y openvpn openssl ca-certificates tar $firewall
@@ -234,7 +235,7 @@ LimitNPROC=infinity" > /etc/systemd/system/openvpn-server@server.service.d/disab
 		systemctl enable --now firewalld.service
 	fi
 	# Get easy-rsa
-	easy_rsa_url='https://github.com/OpenVPN/easy-rsa/releases/download/v3.1.5/EasyRSA-3.1.5.tgz'
+	easy_rsa_url='https://github.com/OpenVPN/easy-rsa/releases/download/v3.2.0/EasyRSA-3.2.0.tgz'
 	mkdir -p /etc/openvpn/server/easy-rsa/
 	{ wget -qO- "$easy_rsa_url" 2>/dev/null || curl -sL "$easy_rsa_url" ; } | tar xz -C /etc/openvpn/server/easy-rsa/ --strip-components 1
 	chown -R root:root /etc/openvpn/server/easy-rsa/
@@ -252,7 +253,7 @@ LimitNPROC=infinity" > /etc/systemd/system/openvpn-server@server.service.d/disab
 	# Without +x in the directory, OpenVPN can't run a stat() on the CRL file
 	chmod o+x /etc/openvpn/server/
 	# Generate key for tls-crypt
-	openvpn --genkey --secret /etc/openvpn/server/tc.key
+	openvpn --genkey secret /etc/openvpn/server/tc.key
 	# Create the DH parameters file using the predefined ffdhe2048 group
 	echo '-----BEGIN DH PARAMETERS-----
 MIIBCAKCAQEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz
@@ -317,7 +318,6 @@ server 10.0.0.0 255.255.255.0" > /etc/openvpn/server/server.conf
 	esac
 	echo 'push "block-outside-dns"' >> /etc/openvpn/server/server.conf
 	echo "keepalive 10 120
-cipher AES-256-CBC
 user nobody
 group $group_name
 persist-key
@@ -394,13 +394,7 @@ WantedBy=multi-user.target" >> /etc/systemd/system/openvpn-iptables.service
 	if sestatus 2>/dev/null | grep "Current mode" | grep -q "enforcing" && [[ "$port" != 1194 ]]; then
 		# Install semanage if not already present
 		if ! hash semanage 2>/dev/null; then
-			if [[ "$os_version" -eq 7 ]]; then
-				# Centos 7
-				yum install -y policycoreutils-python
-			else
-				# CentOS 8 or Fedora
 				dnf install -y policycoreutils-python-utils
-			fi
 		fi
 		semanage port -a -t openvpn_port_t -p "$protocol" "$port"
 	fi
@@ -417,7 +411,6 @@ persist-key
 persist-tun
 remote-cert-tls server
 auth SHA512
-cipher AES-256-CBC
 ignore-unknown-option block-outside-dns
 verb 3" > /etc/openvpn/server/client-common.txt
 	# Enable and start the OpenVPN service
@@ -543,7 +536,7 @@ else
 					apt-get remove --purge -y openvpn
 				else
 					# Else, OS must be CentOS or Fedora
-					yum remove -y openvpn
+					dnf remove -y openvpn
 					rm -rf /etc/openvpn/server
 				fi
 				echo
